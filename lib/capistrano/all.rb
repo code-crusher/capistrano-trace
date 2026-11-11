@@ -12,6 +12,7 @@ require "capistrano/dsl"
 require "capistrano/application"
 require "capistrano/configuration"
 require "capistrano/configuration/scm_resolver"
+require "capistrano/sshkit/command_map"
 
 module Capistrano
 end
