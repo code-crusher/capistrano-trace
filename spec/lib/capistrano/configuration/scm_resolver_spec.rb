@@ -1,5 +1,6 @@
 require "spec_helper"
 require "capistrano/scm"
+require "capistrano/scm/git"
 
 module Capistrano
   class Configuration
@@ -49,6 +50,37 @@ module Capistrano
         it "deletes :scm" do
           resolver.resolve
           expect(fetch(:scm)).to be_nil
+        end
+      end
+
+      context "explicit scm, git plugin installed" do
+        before do
+          set :scm, :git
+          install_plugin Capistrano::SCM::Git
+        end
+
+        it "emits no warning" do
+          expect { resolver.resolve }.not_to output.to_stderr
+        end
+
+        it "deletes :scm" do
+          resolver.resolve
+          expect(fetch(:scm)).to be_nil
+        end
+      end
+
+      context "explicit scm, no plugin installed" do
+        before do
+          set :scm, :git
+        end
+
+        it "emits a warning" do
+          expect { resolver.resolve }.to output(/`set :scm, :git` is deprecated/).to_stderr
+        end
+
+        it "activates the git scm", capture_io: true do
+          resolver.resolve
+          expect(Rake::Task["git:wrapper"]).not_to be_nil
         end
       end
     end

@@ -28,13 +28,15 @@ module Capistrano
         return if scm_name.nil?
         set(:scm, :git) if using_default_scm?
 
-        print_deprecation_warnings_if_applicable
-
-        # Note that `scm_plugin_installed?` comes from Capistrano::DSL
+        # Note that `scm_plugin_installed?` comes from Capistrano::DSL.
+        # If the user has installed an SCM plugin, then the :scm variable is
+        # ignored, so there is no need to print deprecation warnings about it.
         if scm_plugin_installed?
           delete(:scm)
           return
         end
+
+        print_deprecation_warnings_if_applicable
 
         if built_in_scm_name?
           load_built_in_scm
